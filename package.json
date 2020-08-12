@@ -1,5 +1,5 @@
 {
-  "name": "with-tailwindcss",
+  "name": "itme.lol",
   "version": "1.0.0",
   "scripts": {
     "dev": "next",
@@ -7,9 +7,11 @@
     "start": "next start"
   },
   "dependencies": {
-    "next": "latest",
+    "@inrupt/vocab-common-rdf": "^0.5.5",
+    "next": "^9.5.2",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "swrlit": "0.0.9"
   },
   "devDependencies": {
     "postcss-flexbugs-fixes": "4.2.1",
