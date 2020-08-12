@@ -1,17 +1,9 @@
 import Link from 'next/link'
 
 import { useMyProfile, useWebId, useAuthentication } from 'swrlit'
-import {
-  getUrl, getUrlAll, getStringNoLocale, setStringNoLocale
-} from '@itme/solid-client'
+import { getStringNoLocale, setStringNoLocale } from '@itme/solid-client'
 
 import { FOAF } from '@inrupt/vocab-common-rdf'
-
-
-const links = [
-  { href: 'https://github.com/vercel/next.js', label: 'GitHub' },
-  { href: 'https://nextjs.org/docs', label: 'Docs' },
-]
 
 export function AuthButton() {
   const { popupLogin, logout } = useAuthentication()
