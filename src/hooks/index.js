@@ -7,7 +7,7 @@ export function useMyHero(){
   const adventureUri = useAdventureContainerUri(webId)
   const myHeroUri = adventureUri && `${adventureUri}hero.ttl#me`
   const {thing: hero, ...rest} = useThing(myHeroUri)
-  return {room, ...rest}
+  return {hero, ...rest}
 }
 
 export function useMyRoom(){
