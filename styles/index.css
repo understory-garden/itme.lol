@@ -15,6 +15,79 @@
 
 }
 
+.ansi-black-fg {
+  @apply text-black;
+}
+.ansi-black-bg {
+  @apply bg-black;
+}
+.ansi-red-fg {
+  @apply text-red-700;
+}
+.ansi-red-bg {
+  @apply bg-red-700;
+}
+.ansi-green-fg {
+  @apply text-green-700;
+}
+.ansi-green-bg {
+  @apply bg-green-700;
+}
+.ansi-yellow-fg {
+  @apply text-yellow-600;
+}
+.ansi-yellow-bg {
+  @apply bg-yellow-600;
+}
+.ansi-blue-fg {
+  @apply text-blue-700;
+}
+.ansi-blue-bg {
+  @apply bg-blue-700;
+}
+.ansi-magenta-fg {
+  @apply text-pink-700;
+}
+.ansi-magenta-bg {
+  @apply bg-pink-700;
+}
+.ansi-cyan-fg {
+  @apply text-teal-600;
+}
+.ansi-cyan-bg {
+  @apply bg-teal-600;
+}
+.ansi-white-fg {
+  @apply text-gray-500;
+}
+.ansi-white-bg {
+  @apply bg-gray-500;
+}
+.ansi-bright-black-fg {
+  @apply text-gray-600;
+}
+.ansi-bright-red-fg {
+  @apply text-red-500;
+}
+.ansi-bright-green-fg {
+  @apply text-green-500;
+}
+.ansi-bright-yellow-fg {
+  @apply text-yellow-400;
+}
+.ansi-bright-blue-fg {
+  @apply text-blue-500;
+}
+.ansi-bright-magenta-fg {
+  @apply text-pink-500;
+}
+.ansi-bright-cyan-fg {
+  @apply text-teal-400;
+}
+.ansi-bright-white-fg {
+    @apply text-white;
+}
+
 /* Start purging... */
 @tailwind utilities;
 /* Stop purging. */

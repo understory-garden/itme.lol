@@ -12,11 +12,11 @@ function Room({room}){
   const name = getStringNoLocale(room, RDFS.label)
   const description = getStringNoLocale(room, RDFS.comment)
   return (
-    <div>
+    <div className="ansi-white-fg">
       <div className="mb-6">
-        <Ansi>{name}</Ansi>
+        <Ansi useClasses>{name}</Ansi>
       </div>
-      <Ansi>
+      <Ansi useClasses>
         {description}
       </Ansi>
     </div>
@@ -80,9 +80,37 @@ const dispatchOnSubcommand = (commands) => async (command, args, options, contex
   }
 }
 
+const ansi = {
+  reset: '\u001b[0m',
+  black: '\u001b[30m',
+  red: '\u001b[31m',
+  green: '\u001b[32m',
+  yellow: '\u001b[33m',
+  blue: '\u001b[34m',
+  magenta: '\u001b[35m',
+  cyan: '\u001b[36m',
+  white: '\u001b[37m',
+  bBlack: '\u001b[90m',
+  bRed: '\u001b[91m',
+  bGreen: '\u001b[92m',
+  bYellow: '\u001b[93m',
+  bBlue: '\u001b[94m',
+  bMagenta: '\u001b[95m',
+  bCyan: '\u001b[96m',
+  bWhite: '\u001b[97m',
+  blackBg: '\u001b[40m',
+  redBg: '\u001b[41m',
+  greenBg: '\u001b[42m',
+  yellowBg: '\u001b[43m',
+  blueBg: '\u001b[44m',
+  magentaBg: '\u001b[45m',
+  cyanBg: '\u001b[46m',
+  whiteBg: '\u001b[47m'
+}
+
 const createCommands = {
   room: async (command, args, options, {setResult}) => {
-    setResult("\u001b[31mTODO\u001b[0m: implement create room")
+    setResult(`${ansi.red}TODO${ansi.reset}: implement create room`)
   }
 }
 
@@ -110,6 +138,15 @@ const setCommands = {
 const defaultCommands = {
   create: dispatchOnSubcommand(createCommands),
   set: dispatchOnSubcommand(setCommands),
+  rainbow: (_c, _a, _o, {setResult}) => {
+    setResult(`
+${ansi.whiteBg}${ansi.black}b${ansi.reset}${ansi.red}r${ansi.green}g${ansi.yellow}y${ansi.blue}b${ansi.magenta}m${ansi.cyan}c${ansi.white}w
+${ansi.blackBg}b${ansi.redBg}r${ansi.greenBg}g${ansi.yellowBg}y${ansi.blueBg}b${ansi.magentaBg}m${ansi.cyanBg}c${ansi.black}${ansi.whiteBg}w
+${ansi.reset}
+${ansi.whiteBg}${ansi.bBlack}b${ansi.reset}${ansi.bRed}r${ansi.bGreen}g${ansi.bYellow}y${ansi.bBlue}b${ansi.bMagenta}m${ansi.bCyan}c${ansi.bWhite}w
+
+`)
+  }
 }
 
 async function defaultAct(action, context){
@@ -119,7 +156,7 @@ async function defaultAct(action, context){
   if (commandFn) {
     await commandFn(command, args, options, context)
   } else {
-    setResult(`you don't know how to \u001b[34m${command}`)
+    setResult(`you don't know how to ${ansi.blue}${command}`)
   }
 }
 
@@ -162,7 +199,7 @@ export default function IndexPage() {
         {currentRoom && <Room room={currentRoom}/>}
       </div>
       <div className="text-center my-12">
-        <Ansi>
+        <Ansi useClasses>
           {result || defaultResult}
         </Ansi>
       </div>
