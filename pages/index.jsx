@@ -1,19 +1,24 @@
-import Nav from '~components/nav'
-
 import { useState, useEffect } from 'react'
 import { useMyProfile, useWebId, useAuthentication } from 'swrlit'
 import { getStringNoLocale, setStringNoLocale, createThing } from '@itme/solid-client'
-import { useMyRoom, useMyHero } from '~hooks'
 import { RDFS, RDF } from '@inrupt/vocab-common-rdf'
 
+import { useMyRoom, useMyHero } from '~hooks'
+import Nav from '~components/nav'
+import minimist from 'minimist'
+import Ansi from "ansi-to-react";
 
 function Room({room}){
   const name = getStringNoLocale(room, RDFS.label)
   const description = getStringNoLocale(room, RDFS.comment)
   return (
     <div>
-      <h1>{name}</h1>
-      <p>{description}</p>
+      <div className="mb-6">
+        <Ansi>{name}</Ansi>
+      </div>
+      <Ansi>
+        {description}
+      </Ansi>
     </div>
   )
 }
@@ -64,8 +69,58 @@ you hear the door close behind you but when you look back it has disappeared...`
 }
 const outside = createOutside()
 
-function defaultAct(action, {setResult}){
+const dispatchOnSubcommand = (commands) => async (command, args, options, context) => {
+  const {setResult} = context
+  const [subcommand, ...subcommandArgs] = args
+  const subcommandFn = commands[subcommand]
+  if (subcommandFn) {
+    await subcommandFn(subcommand, subcommandArgs, options, {...context, command})
+  } else {
+    setResult(`you don't know how to \u001b[34m${command} ${subcommand || ''}`)
+  }
+}
 
+const createCommands = {
+  room: async (command, args, options, {setResult}) => {
+    setResult("\u001b[31mTODO\u001b[0m: implement create room")
+  }
+}
+
+const setDescription = async (_c, _a, _o, {setResult, setActOverride}) => {
+  setActOverride(async (newDescription, {room, saveRoom}) => {
+    var newRoom = setStringNoLocale(room, RDFS.comment, newDescription)
+    await saveRoom(newRoom)
+    setResult('')
+    setActOverride(null)
+  })
+
+  setResult("what would you like the new room description to be?")
+}
+
+const setRoomCommands = {
+  description: setDescription,
+  desc: setDescription,
+  d: setDescription
+}
+
+const setCommands = {
+  room: dispatchOnSubcommand(setRoomCommands)
+}
+
+const defaultCommands = {
+  create: dispatchOnSubcommand(createCommands),
+  set: dispatchOnSubcommand(setCommands),
+}
+
+async function defaultAct(action, context){
+  const { setResult } = context
+  const {_: [command, ...args], ...options} = minimist(action.trim().split(" "))
+  const commandFn = defaultCommands[command]
+  if (commandFn) {
+    await commandFn(command, args, options, context)
+  } else {
+    setResult(`you don't know how to \u001b[34m${command}`)
+  }
 }
 
 export default function IndexPage() {
@@ -73,6 +128,7 @@ export default function IndexPage() {
   const { room, error: roomError, save: saveRoom, mutate: mutateRoom } = useMyRoom()
   const [ input, setInput ] = useState("")
   const [ result, setResult ] = useState()
+  const [ actOverride, setActOverride] = useState()
 
   const {room: currentRoom, act, defaultResult} = heroError ? (
     theVoid
@@ -80,19 +136,19 @@ export default function IndexPage() {
     roomError ? (
       outside
     ) : (
-      {room, act: defaultAct}
+      {room, act: actOverride || defaultAct}
     )
   )
   async function execute(command){
     await act(command, {
       hero, saveHero, mutateHero,
       room, saveRoom, mutateRoom,
-      result, setResult
+      result, setResult, setActOverride: (f) => setActOverride(_ => f)
     })
   }
   async function onKeyPress(e){
     if (e.key == 'Enter' ) {
-      const command = e.target.value && e.target.value.trim()
+      const command = e.target.value
       if (command){
         await execute(command)
         setInput("")
@@ -102,11 +158,13 @@ export default function IndexPage() {
   return (
     <div className="bg-black w-full h-screen text-gray-500 flex flex-col px-6 pb-6">
       <Nav />
-      <div className="flex-grow text-center my-12">
+      <div className="flex-grow text-center mb-12">
         {currentRoom && <Room room={currentRoom}/>}
       </div>
       <div className="text-center my-12">
-        {result || defaultResult}
+        <Ansi>
+          {result || defaultResult}
+        </Ansi>
       </div>
       <div className="w-full text-lg border-solid border-white border-2 rounded-lg p-1">
         <input type="text" value={input} onChange={ e => setInput(e.target.value) }
