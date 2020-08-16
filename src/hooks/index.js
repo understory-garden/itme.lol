@@ -10,10 +10,18 @@ export function useMyHero(){
   return {hero, ...rest}
 }
 
-export function useMyRoom(){
+export function useMyRoomUri(){
   const webId = useWebId()
   const adventureUri = useAdventureContainerUri(webId)
-  const myRoomUri = adventureUri && `${adventureUri}index.ttl#entryway`
-  const {thing: room, ...rest} = useThing(myRoomUri)
+  return adventureUri && `${adventureUri}index.ttl#entryway`
+}
+
+export function useRoom(roomUri){
+  const {thing: room, ...rest} = useThing(roomUri)
   return {room, ...rest}
+}
+
+export function useMyRoom(){
+  const myRoomUri = useMyRoomUri()
+  return useRoom(myRoomUri)
 }
