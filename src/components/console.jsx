@@ -50,8 +50,8 @@ export default function Console({roomUri}) {
     if (e.key == 'Enter' ) {
       const command = e.target.value
       if (command){
-        await execute(command)
         setInput("")
+        await execute(command)
       }
     }
   }
