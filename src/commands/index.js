@@ -6,11 +6,16 @@ import addCommands from '~commands/add'
 import { ansi } from '~lib/color'
 import adv from '~vocabs/adventure'
 
-function move(direction, {room, sector, router}) {
+function move(direction, {room, sector, router, setResult}) {
   const doorUri = getUrl(room, direction)
-  const door = getThing(sector, doorUri)
-  const roomUri = door && getUrl(door, adv.to)
-  router.push("/room/[roomUri]", `/room/${encodeURIComponent(roomUri)}`)
+  if (doorUri){
+    const door = getThing(sector, doorUri)
+    const roomUri = door && getUrl(door, adv.to)
+    router.push("/room/[roomUri]", `/room/${encodeURIComponent(roomUri)}`)
+    setResult(``)
+  } else {
+    setResult(`can't go that way`)
+  }
 }
 
 const movementCommands = {
