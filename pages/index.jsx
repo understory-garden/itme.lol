@@ -3,11 +3,12 @@ import { useMyProfile, useWebId, useAuthentication } from 'swrlit'
 import { getStringNoLocale, setStringNoLocale, createThing } from '@itme/solid-client'
 import { RDFS, RDF } from '@inrupt/vocab-common-rdf'
 
-import { useMyRoom, useMyHero } from '~hooks'
-import Nav from '~components/nav'
 import minimist from 'minimist'
 import Ansi from "ansi-to-react";
-import punycode from 'punycode'
+
+import { useMyRoom, useMyHero } from '~hooks'
+import Nav from '~components/nav'
+import { ansi, ansiEsc } from '~lib/color'
 
 function Room({room}){
   const name = getStringNoLocale(room, RDFS.label)
@@ -79,62 +80,6 @@ const dispatchOnSubcommand = (commands) => async (command, args, options, contex
   } else {
     setResult(`you don't know how to \u001b[34m${command} ${subcommand || ''}`)
   }
-}
-
-const ansi = {
-  reset: '\u001b[0m',
-  black: '\u001b[30m',
-  red: '\u001b[31m',
-  green: '\u001b[32m',
-  yellow: '\u001b[33m',
-  blue: '\u001b[34m',
-  magenta: '\u001b[35m',
-  cyan: '\u001b[36m',
-  white: '\u001b[37m',
-  bBlack: '\u001b[90m',
-  bRed: '\u001b[91m',
-  bGreen: '\u001b[92m',
-  bYellow: '\u001b[93m',
-  bBlue: '\u001b[94m',
-  bMagenta: '\u001b[95m',
-  bCyan: '\u001b[96m',
-  bWhite: '\u001b[97m',
-  blackBg: '\u001b[40m',
-  redBg: '\u001b[41m',
-  greenBg: '\u001b[42m',
-  yellowBg: '\u001b[43m',
-  blueBg: '\u001b[44m',
-  magentaBg: '\u001b[45m',
-  cyanBg: '\u001b[46m',
-  whiteBg: '\u001b[47m'
-}
-
-const ansiEsc = {
-  reset: '\\u001b[0m',
-  black: '\\u001b[30m',
-  red: '\\u001b[31m',
-  green: '\\u001b[32m',
-  yellow: '\\u001b[33m',
-  blue: '\\u001b[34m',
-  magenta: '\\u001b[35m',
-  cyan: '\\u001b[36m',
-  white: '\\u001b[37m',
-  bBlack: '\\u001b[90m',
-  bRed: '\\u001b[91m',
-  bGreen: '\\u001b[92m',
-  bYellow: '\\u001b[93m',
-  bBlue: '\\u001b[94m',
-  bMagenta: '\\u001b[95m',
-  bCyan: '\\u001b[96m',
-  bWhite: '\\u001b[97m',
-  blackBg: '\\u001b[40m',
-  redBg: '\\u001b[41m',
-  greenBg: '\\u001b[42m',
-  yellowBg: '\\u001b[43m',
-  blueBg: '\\u001b[44m',
-  magentaBg: '\\u001b[45m',
-  cyanBg: '\\u001b[46m',
-  whiteBg: '\\u001b[47m'
 }
 
 function convertAnsi(string){
