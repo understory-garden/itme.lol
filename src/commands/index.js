@@ -1,6 +1,5 @@
 import {  getUrl, getThing } from '@itme/solid-client'
 import { dispatchOnSubcommand, dispatchOnCommand } from './dispatch'
-import createCommands from '~commands/create'
 import setCommands from '~commands/set'
 import addCommands from '~commands/add'
 import { ansi } from '~lib/color'
@@ -40,7 +39,6 @@ const movementCommands = {
 }
 
 const defaultCommands = {
-  create: dispatchOnSubcommand(createCommands),
   set: dispatchOnSubcommand(setCommands),
   add: dispatchOnSubcommand(addCommands),
   rainbow: (_c, _a, _o, {setResult}) => {
