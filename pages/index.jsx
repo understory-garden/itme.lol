@@ -8,7 +8,10 @@ import Ansi from "ansi-to-react";
 
 import { useMyRoom, useMyHero } from '~hooks'
 import Nav from '~components/nav'
-import { ansi, ansiEsc } from '~lib/color'
+import dispatchCommand from '~commands'
+import theVoid from '~rooms/void'
+import outside from '~rooms/outside'
+
 
 function Room({room}){
   const name = getStringNoLocale(room, RDFS.label)
@@ -25,121 +28,11 @@ function Room({room}){
   )
 }
 
-const adventure = {
-  firstAction: `https://itme.lol/v/adventure#firstAction`
-}
-
-function createTheVoid(){
-  var room = createThing();
-  room = setStringNoLocale(room, RDFS.label, "the void")
-  room = setStringNoLocale(room, RDFS.comment, "you float in a formless void")
-  async function act(action, {saveHero, setResult}){
-    var hero = createThing({name: "me"});
-    hero = setStringNoLocale(hero, adventure.firstAction, action)
-    await saveHero(hero)
-    setResult("")
-  }
-  const defaultResult = `a voice whispers from somewhere: action creates worlds`
-  return {room, act, defaultResult}
-}
-const theVoid = createTheVoid()
-
-function createOutside(){
-  var room = createThing();
-  room = setStringNoLocale(room, RDFS.comment, "You are standing at the end of a road before a small brick building. Around you is a forest. A small stream flows out of the building and down a gully.")
-  async function act(action, { setResult, saveRoom }){
-    switch(action){
-    case "look building":
-      setResult("you see a plain looking building with no windows and a single door")
-      break;
-    case "go door":
-    case "go building":
-    case "enter building":
-      var room = createThing({name: "entryway"});
-      room = setStringNoLocale(room, RDFS.label, "your room")
-      room = setStringNoLocale(room, RDFS.comment, "You stand in an empty room. The walls are blank and there are no exits. You feel a pang of claustrophobia...")
-      await saveRoom(room)
-      setResult(`you open the door and step through.
-
-a cool shiver runs through your body as you cross the threshold and you are suddenly deeply certain that this is your space.
-
-you hear the door close behind you but when you look back it has disappeared...`)
-      break;
-    }
-  }
-  return { room, act }
-}
-const outside = createOutside()
-
-const dispatchOnSubcommand = (commands) => async (command, args, options, context) => {
-  const {setResult} = context
-  const [subcommand, ...subcommandArgs] = args
-  const subcommandFn = commands[subcommand]
-  if (subcommandFn) {
-    await subcommandFn(subcommand, subcommandArgs, options, {...context, command})
-  } else {
-    setResult(`you don't know how to \u001b[34m${command} ${subcommand || ''}`)
-  }
-}
-
-function convertAnsi(string){
-  return Object.keys(ansi).reduce((s, k) => {
-    return s.replace(ansiEsc[k], ansi[k])
-  }, string)
-}
-
-const createCommands = {
-  room: async (command, args, options, {setResult}) => {
-    setResult(`${ansi.red}TODO${ansi.reset}: implement create room`)
-  }
-}
-
-
-
-const setDescription = async (_c, _a, _o, {setResult, setActOverride}) => {
-  setActOverride(async (newDescription, {room, saveRoom}) => {
-    var newRoom = setStringNoLocale(room, RDFS.comment, convertAnsi(newDescription))
-    await saveRoom(newRoom)
-    setResult('')
-    setActOverride(null)
-  })
-
-  setResult("what would you like the new room description to be?")
-}
-
-const setRoomCommands = {
-  description: setDescription,
-  desc: setDescription,
-  d: setDescription
-}
-
-const setCommands = {
-  room: dispatchOnSubcommand(setRoomCommands)
-}
-
-const defaultCommands = {
-  create: dispatchOnSubcommand(createCommands),
-  set: dispatchOnSubcommand(setCommands),
-  rainbow: (_c, _a, _o, {setResult}) => {
-    setResult(`
-${ansi.whiteBg}${ansi.black}b${ansi.reset}${ansi.red}r${ansi.green}g${ansi.yellow}y${ansi.blue}b${ansi.magenta}m${ansi.cyan}c${ansi.white}w
-${ansi.blackBg}b${ansi.redBg}r${ansi.greenBg}g${ansi.yellowBg}y${ansi.blueBg}b${ansi.magentaBg}m${ansi.cyanBg}c${ansi.black}${ansi.whiteBg}w
-${ansi.reset}
-${ansi.whiteBg}${ansi.bBlack}b${ansi.reset}${ansi.bRed}r${ansi.bGreen}g${ansi.bYellow}y${ansi.bBlue}b${ansi.bMagenta}m${ansi.bCyan}c${ansi.bWhite}w
-
-`)
-  }
-}
 
 async function defaultAct(action, context){
   const { setResult } = context
   const {_: [command, ...args], ...options} = minimist(action.trim().split(" "))
-  const commandFn = defaultCommands[command]
-  if (commandFn) {
-    await commandFn(command, args, options, context)
-  } else {
-    setResult(`you don't know how to ${ansi.blue}${command}`)
-  }
+  await dispatchCommand(command, args, options, context)
 }
 
 export default function IndexPage() {
