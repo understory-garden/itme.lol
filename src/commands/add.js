@@ -9,16 +9,22 @@ import {dispatchOnSubcommand} from './dispatch'
 function directionToPredicate(direction){
   switch(direction){
   case 'n':
+  case 'north':
     return adv.north
   case 'w':
+  case 'west':
     return adv.west
   case 's':
+  case 'south':
     return adv.south
   case 'e':
+  case 'east':
     return adv.east
   case 'u':
+  case 'up':
     return adv.up
   case 'd':
+  case 'down':
     return adv.down
   }
   return null
