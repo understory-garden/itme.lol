@@ -1,15 +1,9 @@
 import { setStringNoLocale } from '@itme/solid-client'
 import { RDFS } from '@inrupt/vocab-common-rdf'
 
-import { ansi, ansiEsc } from '~lib/color'
+import { convertAnsi } from '~lib/color'
 
 import {dispatchOnSubcommand} from './dispatch'
-
-function convertAnsi(string){
-  return Object.keys(ansi).reduce((s, k) => {
-    return s.replace(ansiEsc[k], ansi[k])
-  }, string)
-}
 
 const setRoomDescription = async (_c, _a, _o, {setResult, setActOverride}) => {
   setActOverride(async (newDescription, {room, saveRoom}) => {

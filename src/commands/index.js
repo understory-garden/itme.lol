@@ -1,11 +1,13 @@
 import { dispatchOnSubcommand, dispatchOnCommand } from './dispatch'
 import createCommands from '~commands/create'
 import setCommands from '~commands/set'
+import addCommands from '~commands/add'
 import { ansi } from '~lib/color'
 
 const defaultCommands = {
   create: dispatchOnSubcommand(createCommands),
   set: dispatchOnSubcommand(setCommands),
+  add: dispatchOnSubcommand(addCommands),
   rainbow: (_c, _a, _o, {setResult}) => {
     setResult(`
 ${ansi.whiteBg}${ansi.black}b${ansi.reset}${ansi.red}r${ansi.green}g${ansi.yellow}y${ansi.blue}b${ansi.magenta}m${ansi.cyan}c${ansi.white}w

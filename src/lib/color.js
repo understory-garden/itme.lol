@@ -53,3 +53,9 @@ export const ansiEsc = {
   cyanBg: '\\u001b[46m',
   whiteBg: '\\u001b[47m'
 }
+
+export function convertAnsi(string){
+  return Object.keys(ansi).reduce((s, k) => {
+    return s.replace(ansiEsc[k], ansi[k])
+  }, string)
+}

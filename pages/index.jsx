@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useMyProfile, useWebId, useAuthentication } from 'swrlit'
-import { getStringNoLocale, setStringNoLocale, createThing } from '@itme/solid-client'
+import { getStringNoLocale, setStringNoLocale, createThing, getUrl, getThing } from '@itme/solid-client'
 import { RDFS, RDF } from '@inrupt/vocab-common-rdf'
 
 import minimist from 'minimist'
@@ -11,19 +11,30 @@ import Nav from '~components/nav'
 import dispatchCommand from '~commands'
 import theVoid from '~rooms/void'
 import outside from '~rooms/outside'
+import adv from '~vocabs/adventure'
 
 
-function Room({room}){
+function Room({room, sector}){
   const name = getStringNoLocale(room, RDFS.label)
   const description = getStringNoLocale(room, RDFS.comment)
+  const northDoor = getThing(sector, getUrl(room, adv.north))
+  const northDoorDescription = northDoor && getStringNoLocale(northDoor, RDFS.comment)
+
   return (
     <div className="ansi-white-fg">
       <div className="mb-6">
         <Ansi useClasses>{name}</Ansi>
       </div>
-      <Ansi useClasses>
-        {description}
-      </Ansi>
+      <div className="mb-3">
+        <Ansi useClasses>
+          {description}
+        </Ansi>
+      </div>
+      <div>
+        <Ansi useClasses>
+          {northDoorDescription ? `you see ${northDoorDescription} to the north` : ''}
+        </Ansi>
+      </div>
     </div>
   )
 }
@@ -37,7 +48,7 @@ async function defaultAct(action, context){
 
 export default function IndexPage() {
   const { hero, error: heroError, save: saveHero, mutate: mutateHero } = useMyHero()
-  const { room, error: roomError, save: saveRoom, mutate: mutateRoom } = useMyRoom()
+  const { room, error: roomError, save: saveRoom, mutate: mutateRoom, resource: sector, saveResource: saveSector } = useMyRoom()
   const [ input, setInput ] = useState("")
   const [ result, setResult ] = useState()
   const [ actOverride, setActOverride] = useState()
@@ -55,6 +66,7 @@ export default function IndexPage() {
     await act(command, {
       hero, saveHero, mutateHero,
       room, saveRoom, mutateRoom,
+      sector, saveSector,
       result, setResult, setActOverride: (f) => setActOverride(_ => f)
     })
   }
@@ -71,7 +83,7 @@ export default function IndexPage() {
     <div className="bg-black w-full h-screen text-gray-500 flex flex-col px-6 pb-6 font-mono">
       <Nav />
       <div className="flex-grow text-center mb-12">
-        {currentRoom && <Room room={currentRoom}/>}
+        {currentRoom && <Room room={currentRoom} sector={sector}/>}
       </div>
       <div className="text-center my-12">
         <Ansi useClasses>
