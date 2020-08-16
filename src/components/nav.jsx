@@ -12,12 +12,12 @@ export function AuthButton() {
     return <div>loading...</div>
   } else if (webId === null) {
     return (
-      <button onClick={() => popupLogin({ popupUri: "/popup.html" })}>
+      <button className="focus:outline-none" onClick={() => popupLogin({ popupUri: "/popup.html" })}>
         log in
       </button>
     )
   } else {
-    return <button onClick={() => logout()}>log out</button>
+    return <button className="outline-none" onClick={() => logout()}>log out</button>
   }
 }
 
@@ -28,13 +28,7 @@ export default function Nav() {
 
   return (
     <nav>
-      <ul className="flex justify-between items-center text-center p-8">
-        <li>
-          <Link href="/">
-            <a className="text-grey-900 no-underline">home</a>
-          </Link>
-        </li>
-
+      <ul className="flex justify-between pb-6 pt-2 px-6 text-xs">
         <li>
           {profile && (
             <>hi, {name}</>
@@ -43,8 +37,6 @@ export default function Nav() {
         <li>
           <AuthButton />
         </li>
-        <ul className="flex justify-between items-center space-x-4">
-        </ul>
       </ul>
     </nav>
   )

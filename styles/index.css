@@ -85,7 +85,7 @@
   @apply text-teal-400;
 }
 .ansi-bright-white-fg {
-    @apply text-white;
+  @apply text-white;
 }
 
 /* Start purging... */
