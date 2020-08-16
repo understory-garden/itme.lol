@@ -11,7 +11,7 @@ function convertAnsi(string){
   }, string)
 }
 
-const setDescription = async (_c, _a, _o, {setResult, setActOverride}) => {
+const setRoomDescription = async (_c, _a, _o, {setResult, setActOverride}) => {
   setActOverride(async (newDescription, {room, saveRoom}) => {
     var newRoom = setStringNoLocale(room, RDFS.comment, convertAnsi(newDescription))
     await saveRoom(newRoom)
@@ -22,10 +22,23 @@ const setDescription = async (_c, _a, _o, {setResult, setActOverride}) => {
   setResult("what would you like the new room description to be?")
 }
 
+const setRoomName = async (_c, _a, _o, {setResult, setActOverride}) => {
+  setActOverride(async (newName, {room, saveRoom}) => {
+    var newRoom = setStringNoLocale(room, RDFS.label, convertAnsi(newName))
+    await saveRoom(newRoom)
+    setResult('')
+    setActOverride(null)
+  })
+
+  setResult("what would you like the new room name to be?")
+}
+
 const setRoomCommands = {
-  description: setDescription,
-  desc: setDescription,
-  d: setDescription
+  description: setRoomDescription,
+  desc: setRoomDescription,
+  d: setRoomDescription,
+  name: setRoomName,
+  n: setRoomName,
 }
 
 export default ({
