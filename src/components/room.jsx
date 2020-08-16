@@ -13,9 +13,9 @@ function directionToName(direction){
     return '\u001b[34ms\u001b[0mouth'
   case adv.east:
     return '\u001b[34me\u001b[0mast'
-  case adv.north:
+  case adv.up:
     return '\u001b[34mu\u001b[0mp'
-  case adv.north:
+  case adv.down:
     return '\u001b[34md\u001b[0mown'
   }
   return null

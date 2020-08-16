@@ -4,6 +4,7 @@ import { getStringNoLocale, setStringNoLocale, createThing, getUrl, getThing } f
 import { RDFS, RDF } from '@inrupt/vocab-common-rdf'
 import minimist from 'minimist'
 import Ansi from "ansi-to-react";
+import { useRouter } from 'next/router'
 
 import { useRoom, useMyHero, useMyRoomUri } from '~hooks'
 import Nav from '~components/nav'
@@ -25,6 +26,7 @@ export default function Console({roomUri}) {
   const [ input, setInput ] = useState("")
   const [ result, setResult ] = useState()
   const [ actOverride, setActOverride] = useState()
+  const router = useRouter()
 
   const {room: currentRoom, act, defaultResult} = heroError ? (
     theVoid
@@ -40,7 +42,8 @@ export default function Console({roomUri}) {
       hero, saveHero, mutateHero,
       room, saveRoom, mutateRoom,
       sector, saveSector,
-      result, setResult, setActOverride: (f) => setActOverride(_ => f)
+      result, setResult, setActOverride: (f) => setActOverride(_ => f),
+      router
     })
   }
   async function onKeyPress(e){
