@@ -66,19 +66,29 @@ async function saveToSector(sector, saveSector, ...things){
   return saveSector(updatedSector)
 }
 
+function addDoorToRooms(direction, thisRoom, otherRoom, {desc}){
+  var doorTo = newDoor(thisRoom, otherRoom, {desc})
+  var doorFrom = newDoor(otherRoom, thisRoom, {desc})
+
+  thisRoom = setUrl(thisRoom, direction, doorTo)
+  otherRoom = setUrl(otherRoom, oppositeOfPredicate(direction), doorFrom)
+
+  return [thisRoom, doorTo, otherRoom, doorFrom]
+}
+
+function createNewRoom({name, desc}){
+  var room = createThing()
+  room = setStringNoLocale(room, RDFS.label, convertAnsi(name || "an empty room"))
+  room = setStringNoLocale(room, RDFS.comment,  convertAnsi(desc || "it's boring in here"))
+  return room
+}
+
 const addRoom = async (_c, [direction], {name, desc, doorDesc}, {sector, saveSector, room, setResult}) => {
   const directionPredicate = directionToPredicate(direction)
   if (directionPredicate){
-    var newRoom = createThing()
-    newRoom = setStringNoLocale(newRoom, RDFS.label, convertAnsi(name || "an empty room"))
-    newRoom = setStringNoLocale(newRoom, RDFS.comment,  convertAnsi(desc || "it's boring in here"))
-    var updatedRoom = room
-
-    var doorFrom = newDoor(newRoom, updatedRoom, {desc})
-    var doorTo = newDoor(updatedRoom, newRoom, {desc})
-
-    updatedRoom = setUrl(updatedRoom, directionPredicate, doorTo)
-    newRoom = setUrl(newRoom, oppositeOfPredicate(directionPredicate), doorFrom)
+    const [updatedRoom, doorTo, newRoom, doorFrom] = addDoorToRooms(
+      directionPredicate, room, createNewRoom({name, desc}), {desc: doorDesc}
+    )
 
     await saveToSector(sector, saveSector, updatedRoom, newRoom, doorTo, doorFrom)
     setResult('')
@@ -87,17 +97,12 @@ const addRoom = async (_c, [direction], {name, desc, doorDesc}, {sector, saveSec
   }
 }
 
-const addDoor = async (_c, [direction, roomUri], {name, desc, doorDesc}, {sector, saveSector, room, setResult, setActOverride}) => {
+const addDoor = async (_c, [direction, roomUri], {desc}, {sector, saveSector, room, setResult, setActOverride}) => {
   const directionPredicate = directionToPredicate(direction)
   if (directionPredicate) {
-    var thisRoom = room
-    var otherRoom = getThing(sector, roomUri)
-
-    var doorFrom = newDoor(otherRoom, thisRoom, {desc})
-    var doorTo = newDoor(thisRoom, otherRoom, {desc})
-
-    thisRoom = setUrl(thisRoom, directionPredicate, doorTo)
-    otherRoom = setUrl(otherRoom, oppositeOfPredicate(directionPredicate), doorFrom)
+    const [thisRoom, doorTo, otherRoom, doorFrom] = addDoorToRooms(
+      directionPredicate, room, getThing(sector, roomUri), {desc}
+    )
 
     await saveToSector(sector, saveSector, thisRoom, otherRoom, doorTo, doorFrom)
   } else {
