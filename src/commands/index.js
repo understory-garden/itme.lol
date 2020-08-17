@@ -2,11 +2,12 @@ import {  getUrl, getThing } from '@itme/solid-client'
 import { dispatchOnSubcommand, dispatchOnCommand } from './dispatch'
 import setCommands from '~commands/set'
 import addCommands from '~commands/add'
+import help from '~commands/help'
 import movementCommands from '~commands/move'
 import { ansi } from '~lib/color'
 import adv from '~vocabs/adventure'
 
-const defaultCommands = {
+export const defaultCommands = {
   set: dispatchOnSubcommand(setCommands),
   add: dispatchOnSubcommand(addCommands),
   a: dispatchOnSubcommand(addCommands),
@@ -19,7 +20,8 @@ ${ansi.whiteBg}${ansi.bBlack}b${ansi.reset}${ansi.bRed}r${ansi.bGreen}g${ansi.bY
 
 `)
   },
-  ...movementCommands
+  ...movementCommands,
+  help
 }
 
 export default dispatchOnCommand(defaultCommands)
