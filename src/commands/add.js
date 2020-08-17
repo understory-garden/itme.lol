@@ -3,7 +3,7 @@ import {
 } from '@itme/solid-client'
 import { RDFS } from '@inrupt/vocab-common-rdf'
 
-import { convertAnsi } from '~lib/color'
+import { ansi, convertAnsi } from '~lib/color'
 import adv from '~vocabs/adventure'
 
 import {dispatchOnSubcommand} from './dispatch'
@@ -91,13 +91,18 @@ function createNewRoom({name, desc}){
 
 const addRoom = async (_c, [direction], {name, desc, doorDesc}, {sector, saveSector, room, setResult}) => {
   const directionPredicate = directionToPredicate(direction)
-  if (directionPredicate){
-    const [updatedRoom, doorTo, newRoom, doorFrom] = addDoorToRooms(
-      directionPredicate, room, createNewRoom({name, desc}), {desc: doorDesc}
-    )
 
-    await saveToSector(sector, saveSector, updatedRoom, newRoom, doorTo, doorFrom)
-    setResult('')
+  if (directionPredicate){
+    const roomThroughTheWall = roomsBeyondWall(sector, room, directionPredicate)[0]
+    if (roomThroughTheWall) {
+      setResult(`there's already a room there, use ${ansi.blue}add door ${direction}`)
+    } else {
+      const [updatedRoom, doorTo, newRoom, doorFrom] = addDoorToRooms(
+        directionPredicate, room, createNewRoom({name, desc}), {desc: doorDesc}
+      )
+      await saveToSector(sector, saveSector, updatedRoom, newRoom, doorTo, doorFrom)
+      setResult('')
+    }
   } else {
     setResult(`don't know direction ${direction}`)
   }
