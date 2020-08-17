@@ -1,5 +1,5 @@
 import {
-  setStringNoLocale, createThing, setThing, addUrl, setUrl, getThing
+  setStringNoLocale, createThing, setThing, addUrl, setUrl, getThing, getUrl
 } from '@itme/solid-client'
 import { RDFS } from '@inrupt/vocab-common-rdf'
 
@@ -7,6 +7,8 @@ import { convertAnsi } from '~lib/color'
 import adv from '~vocabs/adventure'
 
 import {dispatchOnSubcommand} from './dispatch'
+
+const directions = new Set([adv.north, adv.west, adv.south, adv.east, adv.up, adv.down])
 
 function directionToPredicate(direction){
   switch(direction){
@@ -32,22 +34,26 @@ function directionToPredicate(direction){
   return null
 }
 
-function oppositeOfPredicate(directionPredicate){
-  switch(directionPredicate){
-  case adv.south:
-    return adv.north
-  case adv.east:
-    return adv.west
-  case adv.north:
-    return adv.south
-  case adv.west:
-    return adv.east
-  case adv.down:
-    return adv.up
-  case adv.up:
-    return adv.down
+
+const oppositeOfPredicate = {
+  [adv.south]: adv.north,
+  [adv.east]: adv.west,
+  [adv.north]: adv.south,
+  [adv.west]: adv.east,
+  [adv.down]: adv.up,
+  [adv.up]: adv.down
+}
+
+function pathsThroughWall(direction){
+  const back = oppositeOfPredicate[direction]
+  const orthogonal = directions
+  const paths = []
+  for (let d of directions){
+    if (!((d === direction) || (d === back))){
+      paths.push([d, direction, oppositeOfPredicate[d]])
+    }
   }
-  return null
+  return paths
 }
 
 function newDoor(fromRoom, toRoom, {desc = "a simple door"}){
@@ -71,7 +77,7 @@ function addDoorToRooms(direction, thisRoom, otherRoom, {desc}){
   var doorFrom = newDoor(otherRoom, thisRoom, {desc})
 
   thisRoom = setUrl(thisRoom, direction, doorTo)
-  otherRoom = setUrl(otherRoom, oppositeOfPredicate(direction), doorFrom)
+  otherRoom = setUrl(otherRoom, oppositeOfPredicate[direction], doorFrom)
 
   return [thisRoom, doorTo, otherRoom, doorFrom]
 }
@@ -97,14 +103,40 @@ const addRoom = async (_c, [direction], {name, desc, doorDesc}, {sector, saveSec
   }
 }
 
+const addDoorAndSave = async (sector, fromRoom, toRoom, directionPredicate, {desc}, {saveSector}) => {
+  const [thisRoom, doorTo, otherRoom, doorFrom] = addDoorToRooms(
+    directionPredicate, fromRoom, toRoom, {desc}
+  )
+  return await saveToSector(sector, saveSector, thisRoom, otherRoom, doorTo, doorFrom)
+}
+
+function roomsBeyondWall(sector, room, directionPredicate){
+  const rooms = []
+  for (let path of pathsThroughWall(directionPredicate)){
+    const candidateRoom = path.reduce((r, d) => {
+      const doorUrl = r && getUrl(r, d)
+      const door = doorUrl && getThing(sector, doorUrl)
+      const roomThroughDoorUrl = door && getUrl(door, adv.to)
+      return roomThroughDoorUrl && getThing(sector, roomThroughDoorUrl)
+    }, room)
+    if (candidateRoom) rooms.push(candidateRoom)
+  }
+  return rooms
+}
+
 const addDoor = async (_c, [direction, roomUri], {desc}, {sector, saveSector, room, setResult, setActOverride}) => {
   const directionPredicate = directionToPredicate(direction)
   if (directionPredicate) {
-    const [thisRoom, doorTo, otherRoom, doorFrom] = addDoorToRooms(
-      directionPredicate, room, getThing(sector, roomUri), {desc}
-    )
-
-    await saveToSector(sector, saveSector, thisRoom, otherRoom, doorTo, doorFrom)
+    if (roomUri){
+      await addDoorAndSave(sector, room, getThing(sector, roomUri), directionPredicate, {desc}, {saveSector})
+    } else {
+      const roomThroughTheWall = roomsBeyondWall(sector, room, directionPredicate)[0]
+      if (roomThroughTheWall) {
+        await addDoorAndSave(sector, room, roomThroughTheWall, directionPredicate, {desc}, {saveSector})
+      } else {
+        setResult(`can't find a room through the wall to the ${direction}`)
+      }
+    }
   } else {
     setResult(`don't know direction ${direction}`)
   }
