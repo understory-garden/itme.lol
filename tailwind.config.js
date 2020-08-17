@@ -5,6 +5,9 @@ module.exports = {
       colors: {
         'accent-1': '#333',
       },
+      fontFamily: {
+        mono: ['covik-sans-mono', 'sans-serif'],
+      },
     },
   },
   variants: {},
