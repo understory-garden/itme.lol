@@ -2,41 +2,9 @@ import {  getUrl, getThing } from '@itme/solid-client'
 import { dispatchOnSubcommand, dispatchOnCommand } from './dispatch'
 import setCommands from '~commands/set'
 import addCommands from '~commands/add'
+import movementCommands from '~commands/move'
 import { ansi } from '~lib/color'
 import adv from '~vocabs/adventure'
-
-function move(direction, {room, sector, router, setResult}) {
-  const doorUri = getUrl(room, direction)
-  if (doorUri){
-    const door = getThing(sector, doorUri)
-    const roomUri = door && getUrl(door, adv.to)
-    router.push("/room/[roomUri]", `/room/${encodeURIComponent(roomUri)}`)
-    setResult(``)
-  } else {
-    setResult(`can't go that way`)
-  }
-}
-
-const movementCommands = {
-  n: (_c, _a, _o, context) => {
-    move(adv.north, context)
-  },
-  w: (_c, _a, _o, context) => {
-    move(adv.west, context)
-  },
-  s: (_c, _a, _o, context) => {
-    move(adv.south, context)
-  },
-  e: (_c, _a, _o, context) => {
-    move(adv.east, context)
-  },
-  u: (_c, _a, _o, context) => {
-    move(adv.up, context)
-  },
-  d: (_c, _a, _o, context) => {
-    move(adv.down, context)
-  }
-}
 
 const defaultCommands = {
   set: dispatchOnSubcommand(setCommands),
