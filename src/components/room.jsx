@@ -1,4 +1,7 @@
-import { getStringNoLocale, setStringNoLocale, createThing, getUrl, getThing } from '@itme/solid-client'
+import {
+  getStringNoLocale, setStringNoLocale, createThing, getUrl, getThing,
+  asUrl
+} from '@itme/solid-client'
 import { RDFS } from '@inrupt/vocab-common-rdf'
 import Ansi from "ansi-to-react";
 import adv from '~vocabs/adventure'
@@ -40,7 +43,9 @@ export default function Room({room, sector}){
   return (
     <div className="ansi-white-fg">
       <div className="mb-6">
-        <Ansi useClasses>{name}</Ansi>
+        <a href={asUrl(room)} target="_blank" rel="noopener noreferrer">
+          <Ansi useClasses>{name}</Ansi>
+        </a>
       </div>
       <div className="mb-3">
         <Ansi useClasses>

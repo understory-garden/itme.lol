@@ -41,6 +41,7 @@ const movementCommands = {
 const defaultCommands = {
   set: dispatchOnSubcommand(setCommands),
   add: dispatchOnSubcommand(addCommands),
+  a: dispatchOnSubcommand(addCommands),
   rainbow: (_c, _a, _o, {setResult}) => {
     setResult(`
 ${ansi.whiteBg}${ansi.black}b${ansi.reset}${ansi.red}r${ansi.green}g${ansi.yellow}y${ansi.blue}b${ansi.magenta}m${ansi.cyan}c${ansi.white}w
