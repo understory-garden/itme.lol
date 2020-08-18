@@ -7,11 +7,15 @@ const commands = ({
   add: `add: ${ansi.blue}{room | door} <direction>`
 })
 
+const hiddenCommands = new Set([
+  "attack"
+])
+
 export default function help(command, [subcommand], options, { setResult }){
   const subcommandHelp = commands[subcommand]
   if (subcommandHelp){
     setResult(subcommandHelp)
   } else {
-    setResult(`commands: ${ansi.blue}${Object.keys(defaultCommands).join("\n")}`)
+    setResult(`commands: ${ansi.blue}${Object.keys(defaultCommands).filter(k => !hiddenCommands.has(k)).join("\n")}`)
   }
 }
