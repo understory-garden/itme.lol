@@ -8,6 +8,9 @@ import { ansi } from '~lib/color'
 import adv from '~vocabs/adventure'
 
 export const defaultCommands = {
+  attack: (_c, [target], _o, {setResult}) => {
+    setResult(`you launch yourself wildly at ${target || 'nothing in particular'}`)
+  },
   set: dispatchOnSubcommand(setCommands),
   add: dispatchOnSubcommand(addCommands),
   a: dispatchOnSubcommand(addCommands),
