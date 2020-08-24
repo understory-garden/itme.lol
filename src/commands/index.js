@@ -1,4 +1,5 @@
 import {  getUrl, getThing } from '@itme/solid-client'
+import { handleToIdp } from 'swrlit'
 import { dispatchOnSubcommand, dispatchOnCommand } from './dispatch'
 import setCommands from '~commands/set'
 import addCommands from '~commands/add'
@@ -7,7 +8,17 @@ import movementCommands from '~commands/move'
 import { ansi } from '~lib/color'
 import adv from '~vocabs/adventure'
 
+const authCommands = {
+  in: async (_c, [handle], _o, {auth: {loginHandle}}) => {
+    await loginHandle(handle);
+  },
+  out: async (_c, _a, _o, {auth: {logout}}) => {
+    await logout()
+  }
+}
+
 export const defaultCommands = {
+  log: dispatchOnSubcommand(authCommands),
   attack: (_c, [target], _o, {setResult}) => {
     setResult(`you launch yourself wildly at ${target || 'nothing in particular'}`)
   },

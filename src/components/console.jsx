@@ -26,8 +26,9 @@ export default function Console({roomUri}) {
   const [ input, setInput ] = useState("")
   const [ result, setResult ] = useState()
   const [ actOverride, setActOverride] = useState()
+  const auth = useAuthentication()
   const router = useRouter()
-
+  if(roomError) throw roomError
   const {room: currentRoom, act, defaultResult} = heroError ? (
     theVoid
   ) : (
@@ -43,7 +44,7 @@ export default function Console({roomUri}) {
       room, saveRoom, mutateRoom,
       sector, saveSector,
       result, setResult, setActOverride: (f) => setActOverride(_ => f),
-      router
+      router, auth
     })
   }
   async function onKeyPress(e){

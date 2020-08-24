@@ -43,9 +43,7 @@ export default function Room({room, sector}){
   return (
     <div className="ansi-white-fg">
       <div className="mb-6">
-        <a href={asUrl(room)} target="_blank" rel="noopener noreferrer">
-          <Ansi useClasses>{name}</Ansi>
-        </a>
+        <Ansi useClasses>{name}</Ansi>
       </div>
       <div className="mb-3">
         <Ansi useClasses>
