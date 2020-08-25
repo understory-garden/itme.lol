@@ -26,7 +26,7 @@ export default function Console({roomUri}) {
   const [ result, setResult ] = useState()
 
   const [ actOverride, setActOverride] = useState()
-  const defaultHyperRoom = {room, act: actOverride || defaultAct}
+  const defaultHyperCard = {room, act: actOverride || defaultAct}
 
   const loggedIn = useLoggedIn()
   const {room: currentRoom, act, defaultResult} = (loggedIn === true) ? (
@@ -36,7 +36,7 @@ export default function Console({roomUri}) {
       roomError ? (
         outside
       ) : (
-        defaultHyperRoom
+        defaultHyperCard
       )
     )
   ) : (
