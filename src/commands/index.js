@@ -3,6 +3,7 @@ import { handleToIdp } from 'swrlit'
 import { dispatchOnSubcommand, dispatchOnCommand } from './dispatch'
 import setCommands from '~commands/set'
 import addCommands from '~commands/add'
+import deleteCommands from '~commands/delete'
 import help from '~commands/help'
 import movementCommands from '~commands/move'
 import { ansi } from '~lib/color'
@@ -22,6 +23,7 @@ export const defaultCommands = {
   attack: (_c, [target], _o, {setResult}) => {
     setResult(`you launch yourself wildly at ${target || 'nothing in particular'}`)
   },
+  delete: dispatchOnSubcommand(deleteCommands),
   set: dispatchOnSubcommand(setCommands),
   add: dispatchOnSubcommand(addCommands),
   a: dispatchOnSubcommand(addCommands),

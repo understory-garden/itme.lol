@@ -8,7 +8,8 @@ const commands = ({
 })
 
 const hiddenCommands = new Set([
-  "attack"
+  "attack",
+  "delete yourself"
 ])
 
 export default function help(command, [subcommand], options, { setResult }){

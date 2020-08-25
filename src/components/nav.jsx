@@ -26,15 +26,16 @@ export function AuthButton() {
 
 
 export default function Nav() {
+  const webId = useWebId()
   const { profile } = useMyProfile()
   const name = profile && getStringNoLocale(profile, FOAF.name)
 
   return (
     <nav>
-      <ul className="flex justify-between pb-6 pt-2 px-6 text-xs">
+      <ul className="flex justify-between pb-6 pt-2 pr-6 text-xs">
         <li>
           {profile && (
-            <>hi, {name}</>
+            <a href={webId} target="_blank" rel="noopener noreferrer">{name}</a>
           )}
         </li>
       </ul>

@@ -2,22 +2,21 @@ import { useState, useEffect } from 'react'
 import { useMyProfile, useWebId, useAuthentication } from 'swrlit'
 import { getStringNoLocale, setStringNoLocale, createThing, getUrl, getThing } from '@itme/solid-client'
 import { RDFS, RDF } from '@inrupt/vocab-common-rdf'
-import minimist from 'minimist'
 import Ansi from "ansi-to-react";
 import { useRouter } from 'next/router'
 
 import { useRoom, useMyHero, useMyRoomUri } from '~hooks'
 import Nav from '~components/nav'
 import Room from '~components/room'
-import dispatchCommand from '~commands'
 import theVoid from '~rooms/void'
 import outside from '~rooms/outside'
+import anonymous from '~rooms/anonymous'
 import adv from '~vocabs/adventure'
+import { defaultAct } from '~rooms'
 
-async function defaultAct(action, context){
-  const { setResult } = context
-  const {_: [command, ...args], ...options} = minimist(action.trim().split(" "))
-  await dispatchCommand(command, args, options, context)
+export const useLoggedIn = () => {
+  const { session } = useAuthentication()
+  return session && session.info && session.info.isLoggedIn
 }
 
 export default function Console({roomUri}) {
@@ -25,26 +24,39 @@ export default function Console({roomUri}) {
   const { hero, error: heroError, save: saveHero, mutate: mutateHero } = useMyHero()
   const [ input, setInput ] = useState("")
   const [ result, setResult ] = useState()
+
   const [ actOverride, setActOverride] = useState()
-  const auth = useAuthentication()
-  const router = useRouter()
-  if(roomError) throw roomError
-  const {room: currentRoom, act, defaultResult} = heroError ? (
-    theVoid
-  ) : (
-    roomError ? (
-      outside
+  const defaultHyperRoom = {room, act: actOverride || defaultAct}
+
+  const loggedIn = useLoggedIn()
+  const {room: currentRoom, act, defaultResult} = (loggedIn === true) ? (
+    heroError ? (
+      theVoid
     ) : (
-      {room, act: actOverride || defaultAct}
+      roomError ? (
+        outside
+      ) : (
+        defaultHyperRoom
+      )
+    )
+  ) : (
+    (loggedIn === false) ? (
+      anonymous
+    ) : (
+      {}
     )
   )
+
+  const auth = useAuthentication()
+  const router = useRouter()
+  const webId = useWebId()
   async function execute(command){
     await act(command, {
       hero, saveHero, mutateHero,
       room, saveRoom, mutateRoom,
       sector, saveSector,
       result, setResult, setActOverride: (f) => setActOverride(_ => f),
-      router, auth
+      router, auth, webId
     })
   }
   async function onKeyPress(e){

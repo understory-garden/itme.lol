@@ -1,10 +1,14 @@
 import { getStringNoLocale, setStringNoLocale, createThing } from '@itme/solid-client'
 import { RDFS, RDF } from '@inrupt/vocab-common-rdf'
+import { createRoom, defaultAct } from './'
 
 function createOutside(){
-  var room = createThing();
-  room = setStringNoLocale(room, RDFS.comment, "You are standing at the end of a road before a small brick building. Around you is a forest. A small stream flows out of the building and down a gully.")
-  async function act(action, { setResult, saveRoom }){
+
+  const room = createRoom({
+    description: "You are standing at the end of a road before a small brick building. Around you is a forest. A small stream flows out of the building and down a gully."
+  })
+  async function act(action, context){
+    const { setResult, saveRoom } = context
     switch(action){
     case "look building":
       setResult("you see a plain looking building with no windows and a single door")
@@ -22,6 +26,8 @@ a cool shiver runs through your body as you cross the threshold and you are sudd
 
 you hear the door close behind you but when you look back it has disappeared...`)
       break;
+    default:
+      return defaultAct(action, context)
     }
   }
   return { room, act }

@@ -1,12 +1,18 @@
 import { getStringNoLocale, setStringNoLocale, createThing } from '@itme/solid-client'
 import { RDFS, RDF } from '@inrupt/vocab-common-rdf'
 import adventure from '~vocabs/adventure'
+import { createRoom, defaultAct } from './'
 
 function createTheVoid(){
-  var room = createThing();
-  room = setStringNoLocale(room, RDFS.label, "the void")
-  room = setStringNoLocale(room, RDFS.comment, "you float in a formless void")
-  async function act(action, {saveHero, setResult}){
+  const room = createRoom({
+    name: "the void",
+    description: "you float in a formless void"
+  })
+  async function act(action, context){
+    const {saveHero, setResult} = context
+    if (action.startsWith("log out")){
+      defaultAct(action, context)
+    }
     var hero = createThing({name: "me"});
     hero = setStringNoLocale(hero, adventure.firstAction, action)
     await saveHero(hero)
