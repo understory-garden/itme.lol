@@ -29,21 +29,25 @@ export default function Console({roomUri}) {
   const defaultHyperCard = {room, act: actOverride || defaultAct}
 
   const loggedIn = useLoggedIn()
-  const {room: currentRoom, act, defaultResult} = (loggedIn === true) ? (
-    heroError ? (
-      theVoid
-    ) : (
-      roomError ? (
-        outside
-      ) : (
-        defaultHyperCard
-      )
-    )
+  const {room: currentRoom, act, defaultResult} = (room && hero) ? (
+    defaultHyperCard
   ) : (
-    (loggedIn === false) ? (
-      anonymous
+    (loggedIn === true) ? (
+      heroError ? (
+        theVoid
+      ) : (
+        roomError ? (
+          outside
+        ) : (
+          {}
+        )
+      )
     ) : (
-      {}
+      (loggedIn === false) ? (
+        anonymous
+      ) : (
+        {}
+      )
     )
   )
 
